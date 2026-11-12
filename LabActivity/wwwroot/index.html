@@ -1,0 +1,635 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Products - JWT Lab</title>
+    <style>
+        :root {
+            --bg: #f3f5fb;
+            --card: #ffffff;
+            --text: #1f2540;
+            --muted: #6b7394;
+            --line: #e6e9f4;
+            --primary: #5b5bd6;
+            --primary-dark: #4747b8;
+            --ok: #1f9d6b;
+            --warn: #d98a00;
+            --err: #d6455d;
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: #fff;
+            padding: 1.6rem 1rem 4.2rem;
+        }
+
+        .wrap {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        header .wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            letter-spacing: .3px;
+        }
+
+        header p {
+            margin: .25rem 0 0;
+            opacity: .85;
+            font-size: .92rem;
+        }
+
+        .userbox {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            background: rgba(255,255,255,.16);
+            padding: .5rem .8rem;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+        }
+
+        .userbox .name {
+            font-weight: 600;
+            font-size: .95rem;
+        }
+
+        .role {
+            font-size: .72rem;
+            padding: .15rem .5rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,.28);
+        }
+
+        .btn-logout {
+            background: #fff;
+            color: var(--primary);
+            border: 0;
+            padding: .35rem .8rem;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+            .btn-logout:hover {
+                background: #eef;
+            }
+
+        main {
+            margin-top: -3rem;
+            padding-bottom: 3rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.1rem;
+        }
+
+        @media (max-width: 720px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.3rem;
+            box-shadow: 0 6px 22px rgba(60, 60, 130, .08);
+            margin-bottom: 1.1rem;
+        }
+
+        .grid .card {
+            margin-bottom: 0;
+        }
+
+        .card h2 {
+            margin: 0 0 .15rem;
+            font-size: 1.1rem;
+        }
+
+        .card .sub {
+            margin: 0 0 1rem;
+            color: var(--muted);
+            font-size: .86rem;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: .68rem;
+            padding: .12rem .5rem;
+            border-radius: 999px;
+            background: #eceafd;
+            color: var(--primary);
+            margin-left: .4rem;
+            vertical-align: middle;
+        }
+
+            .tag.admin {
+                background: #fde8ec;
+                color: var(--err);
+            }
+
+            .tag.public {
+                background: #e3f6ee;
+                color: var(--ok);
+            }
+
+        label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            margin: .6rem 0 .25rem;
+            color: var(--muted);
+        }
+
+        input {
+            width: 100%;
+            padding: .62rem .75rem;
+            border: 1.5px solid var(--line);
+            border-radius: 10px;
+            font-size: .95rem;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            background: #fbfcff;
+        }
+
+            input:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(91, 91, 214, .15);
+                background: #fff;
+            }
+
+        .row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: .7rem;
+        }
+
+        button.btn {
+            margin-top: .9rem;
+            width: 100%;
+            padding: .68rem 1rem;
+            border: 0;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s, transform .05s;
+        }
+
+            button.btn:hover {
+                background: var(--primary-dark);
+            }
+
+            button.btn:active {
+                transform: translateY(1px);
+            }
+
+            button.btn.outline {
+                background: #fff;
+                color: var(--primary);
+                border: 1.5px solid var(--primary);
+            }
+
+                button.btn.outline:hover {
+                    background: #f1f1fd;
+                }
+
+        .msg {
+            margin: .7rem 0 0;
+            font-size: .85rem;
+            min-height: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            color: var(--muted);
+        }
+
+        .code {
+            display: inline-block;
+            padding: .12rem .55rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: .78rem;
+            color: #fff;
+            background: var(--muted);
+        }
+
+            .code.ok {
+                background: var(--ok);
+            }
+
+            .code.warn {
+                background: var(--warn);
+            }
+
+            .code.err {
+                background: var(--err);
+            }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            text-align: left;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--muted);
+            padding: .55rem .7rem;
+            border-bottom: 2px solid var(--line);
+        }
+
+        tbody td {
+            padding: .7rem;
+            border-bottom: 1px solid var(--line);
+            font-size: .95rem;
+        }
+
+        tbody tr:hover {
+            background: #f7f8ff;
+        }
+
+        td.price {
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        td.id {
+            color: var(--muted);
+            width: 56px;
+        }
+
+        td.act {
+            text-align: right;
+            width: 90px;
+        }
+
+        .btn-del {
+            background: #fff;
+            color: var(--err);
+            border: 1.5px solid #f2c4cc;
+            padding: .3rem .7rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+            .btn-del:hover {
+                background: #fdecef;
+            }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 1.5rem;
+        }
+
+        #toasts {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            z-index: 50;
+        }
+
+        .toast {
+            background: #1f2540;
+            color: #fff;
+            padding: .75rem 1rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.25);
+            font-size: .9rem;
+            border-left: 5px solid var(--primary);
+            animation: slide .25s ease;
+        }
+
+            .toast.warn {
+                border-left-color: var(--warn);
+            }
+
+            .toast.err {
+                border-left-color: var(--err);
+            }
+
+            .toast.ok {
+                border-left-color: var(--ok);
+            }
+
+        @keyframes slide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="wrap">
+            <div>
+                <h1>Products</h1>
+                <p>JWT Authentication Lab - ASP.NET Core 8</p>
+            </div>
+            <div class="userbox" id="userbox">
+                <div class="avatar" id="avatar">?</div>
+                <span class="name" id="who">Not logged in</span>
+                <span class="role hidden" id="roleBadge"></span>
+                <button class="btn-logout hidden" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="wrap">
+
+            <div class="grid">
+                <section class="card">
+                    <h2>Register</h2>
+                    <p class="sub">Gumawa ng bagong account.</p>
+                    <form id="registerForm">
+                        <label for="regUser">Username</label>
+                        <input id="regUser" placeholder="e.g. juan" required />
+                        <label for="regPass">Password</label>
+                        <input id="regPass" type="password" placeholder="Password" required />
+                        <button class="btn outline" type="submit">Register</button>
+                    </form>
+                    <p class="msg" id="regMsg"></p>
+                </section>
+
+                <section class="card">
+                    <h2>Login</h2>
+                    <p class="sub">Kumuha ng token para sa secured actions.</p>
+                    <form id="loginForm">
+                        <label for="logUser">Username</label>
+                        <input id="logUser" placeholder="Username" required />
+                        <label for="logPass">Password</label>
+                        <input id="logPass" type="password" placeholder="Password" required />
+                        <button class="btn" type="submit">Login</button>
+                    </form>
+                    <p class="msg" id="loginMsg"></p>
+                </section>
+            </div>
+
+            <section class="card" style="margin-top:1.1rem">
+                <h2>Add product <span class="tag admin">Admin only</span></h2>
+                <p class="sub">POST /api/products - kailangan ng token na may role na Admin.</p>
+                <form id="addForm">
+                    <div class="row">
+                        <div>
+                            <label for="pName">Name</label>
+                            <input id="pName" placeholder="Product name" required />
+                        </div>
+                        <div>
+                            <label for="pPrice">Price</label>
+                            <input id="pPrice" type="number" step="0.01" placeholder="0.00" required />
+                        </div>
+                    </div>
+                    <button class="btn" type="submit">Add product</button>
+                </form>
+                <p class="msg" id="addMsg"></p>
+            </section>
+
+            <section class="card">
+                <h2>Product list <span class="tag public">Public</span></h2>
+                <p class="sub">GET /api/products - bukas sa lahat, walang token.</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Id</th><th>Name</th><th>Price</th><th></th></tr></thead>
+                        <tbody id="productRows"></tbody>
+                    </table>
+                </div>
+                <p class="msg" id="listMsg"></p>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="toasts"></div>
+
+    <script>
+        const BASE = "https://localhost:7221";
+
+        const $ = (id) => document.getElementById(id);
+
+        function toast(text, type) {
+            const t = document.createElement("div");
+            t.className = "toast " + (type || "");
+            t.textContent = text;
+            $("toasts").appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+
+        function setMsg(el, text, code) {
+            el.innerHTML = "";
+            if (code !== undefined) {
+                const b = document.createElement("span");
+                b.className = "code " + (code >= 200 && code < 300 ? "ok" : code === 401 || code === 400 ? "warn" : "err");
+                b.textContent = code;
+                el.appendChild(b);
+            }
+            el.appendChild(document.createTextNode(text));
+        }
+
+        function getToken() { return localStorage.getItem("token"); }
+
+        function getRole() {
+            try {
+                const payload = JSON.parse(atob(getToken().split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+                return payload["role"] || payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || "";
+            } catch { return ""; }
+        }
+
+        function updateStatus() {
+            const token = getToken();
+            const user = localStorage.getItem("username") || "";
+            $("who").textContent = token ? user : "Not logged in";
+            $("avatar").textContent = token && user ? user[0].toUpperCase() : "?";
+            $("logoutBtn").classList.toggle("hidden", !token);
+            const role = token ? getRole() : "";
+            $("roleBadge").textContent = role;
+            $("roleBadge").classList.toggle("hidden", !role);
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            updateStatus();
+            toast("Logged out", "ok");
+        }
+        $("logoutBtn").addEventListener("click", logout);
+
+        async function authFetch(url, options = {}) {
+            const token = getToken();
+            options.headers = options.headers || {};
+            if (token) options.headers["Authorization"] = "Bearer " + token;
+
+            const res = await fetch(url, options);
+            if (res.status === 401) toast("401 - Please log in again.", "warn");
+            if (res.status === 403) toast("403 - You are not allowed to do that.", "err");
+            return res;
+        }
+
+        $("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const res = await fetch(BASE + "/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: $("regUser").value, password: $("regPass").value })
+            });
+            setMsg($("regMsg"), res.ok ? "Registered. Now log in." : "Register failed.", res.status);
+            if (res.ok) $("registerForm").reset();
+        });
+
+        $("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = $("logUser").value;
+            const res = await fetch(BASE + "/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: username, password: $("logPass").value })
+            });
+            if (!res.ok) { setMsg($("loginMsg"), "Login failed.", res.status); return; }
+            const data = await res.json();
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("username", username);
+            setMsg($("loginMsg"), "Logged in.", res.status);
+            $("loginForm").reset();
+            updateStatus();
+            toast("Welcome, " + username, "ok");
+        });
+
+        async function loadAll() {
+            const res = await fetch(BASE + "/api/products");
+            setMsg($("listMsg"), "GET list", res.status);
+            if (!res.ok) return;
+            const products = await res.json();
+            const rows = $("productRows");
+            rows.innerHTML = "";
+
+            if (products.length === 0) {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 4;
+                td.className = "empty";
+                td.textContent = "Wala pang products.";
+                tr.appendChild(td);
+                rows.appendChild(tr);
+                return;
+            }
+
+            for (const p of products) {
+                const tr = document.createElement("tr");
+
+                const id = document.createElement("td");
+                id.className = "id";
+                id.textContent = p.id;
+
+                const name = document.createElement("td");
+                name.textContent = p.name;
+
+                const price = document.createElement("td");
+                price.className = "price";
+                price.textContent = Number(p.price).toFixed(2);
+
+                const act = document.createElement("td");
+                act.className = "act";
+                const btn = document.createElement("button");
+                btn.className = "btn-del";
+                btn.textContent = "Delete";
+                btn.addEventListener("click", () => deleteProduct(p.id));
+                act.appendChild(btn);
+
+                tr.append(id, name, price, act);
+                rows.appendChild(tr);
+            }
+        }
+
+        async function addProduct(name, price) {
+            const res = await authFetch(BASE + "/api/products", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name, price: Number(price) })
+            });
+            setMsg($("addMsg"), "POST product", res.status);
+            if (res.ok) {
+                $("addForm").reset();
+                toast("Product added", "ok");
+                loadAll();
+            }
+        }
+
+        async function deleteProduct(id) {
+            const res = await authFetch(BASE + "/api/products/" + id, { method: "DELETE" });
+            setMsg($("listMsg"), "DELETE product", res.status);
+            if (res.ok) {
+                toast("Product deleted", "ok");
+                loadAll();
+            }
+        }
+
+        $("addForm").addEventListener("submit", (e) => {
+            e.preventDefault();
+            addProduct($("pName").value, $("pPrice").value);
+        });
+
+        updateStatus();
+        loadAll();
+    </script>
+</body>
+</html>
